@@ -1,5 +1,5 @@
 package com.chanse.cs492.treasurehunt
-
+import com.chanse.cs492.treasurehunt.ui.screens.HomeScreen
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -19,12 +19,16 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             TreasureHuntTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
+                HomeScreen(
+                    onPlay = { /* later navigate to menu */
+                    }
+                )
+                // Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                    // Greeting(
+                        // name = "Android",
+                        // modifier = Modifier.padding(innerPadding)
+                    // )
+
             }
         }
     }
