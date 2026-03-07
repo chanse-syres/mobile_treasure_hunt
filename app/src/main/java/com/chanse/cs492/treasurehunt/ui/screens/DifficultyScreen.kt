@@ -42,7 +42,7 @@ fun DifficultyScreen() {
                 onClick = { /* TODO hard */ },
                 modifier = Modifier
                     .align(Alignment.TopCenter)
-                    .padding(top = maxHeight * 0.24f)
+                    .padding(top = maxHeight * 0.23f)
                     .fillMaxWidth(0.76f),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color(0xFFD3D3D3),
