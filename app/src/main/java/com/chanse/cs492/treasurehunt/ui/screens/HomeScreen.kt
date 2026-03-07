@@ -61,6 +61,7 @@ fun HomeScreen(onPlay: () -> Unit) {
     fun isLocationEnabled(): Boolean = LocationManagerCompat.isLocationEnabled(locationManager)
 
     var showEnableLocationDialog by remember { mutableStateOf(false) }
+    var showPermissionExplainer by remember { mutableStateOf(false) }
 
     // Permission launcher
     val permissionLauncher = rememberLauncherForActivityResult(
@@ -103,6 +104,33 @@ fun HomeScreen(onPlay: () -> Unit) {
         )
     }
 
+    // Dialog that explains why the location is needed before the OS permission sheet is shown.
+    if (showPermissionExplainer) {
+        AlertDialog(
+            onDismissRequest = { showPermissionExplainer = false },
+            title = { Text("Location Permission") },
+            text = { Text("Treasure Hunt uses GPS to place and track treasure locations near you.") },
+            confirmButton = {
+                TextButton(onClick = {
+                    showPermissionExplainer = false
+                    permissionLauncher.launch(
+                        arrayOf(
+                            Manifest.permission.ACCESS_FINE_LOCATION,
+                            Manifest.permission.ACCESS_COARSE_LOCATION
+                        )
+                    )
+                }) {
+                    Text("Continue")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showPermissionExplainer = false }) {
+                    Text("Cancel")
+                }
+            }
+        )
+    }
+
     Box(modifier = Modifier.fillMaxSize()) {
 
         // Background images
@@ -131,12 +159,7 @@ fun HomeScreen(onPlay: () -> Unit) {
                 // 2. If permission but GPS off, prompts to enable
                 // 3. If both good are true, navigate
                 if (!hasLocationPermission()) {
-                    permissionLauncher.launch(
-                        arrayOf(
-                            Manifest.permission.ACCESS_FINE_LOCATION,
-                            Manifest.permission.ACCESS_COARSE_LOCATION
-                        )
-                    )
+                    showPermissionExplainer = true
                 } else {
                     if (isLocationEnabled()) {
                         onPlay()
