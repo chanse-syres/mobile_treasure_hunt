@@ -185,7 +185,7 @@ fun HomeScreen(onPlay: () -> Unit) {
 }
 
 /**
- * Curved title using nativeCanvas.drawTextOnPath().
+ * Curves title using nativeCanvas.drawTextOnPath().
  * Includes black outline and a gold fill (same as button).
  */
 @Composable
