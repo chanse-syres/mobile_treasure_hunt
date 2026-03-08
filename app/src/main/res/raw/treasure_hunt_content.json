@@ -1,0 +1,45 @@
+{
+  "home": {
+    "title": "Treasure Hunt",
+    "playButton": "Play",
+    "locationPermissionTitle": "Location Permission",
+    "locationPermissionMessage": "Treasure Hunt uses GPS to place and track treasure locations near you.",
+    "continueButton": "Continue",
+    "cancelButton": "Cancel",
+    "enableLocationTitle": "Enable Location",
+    "enableLocationMessage": "Please enable Location/GPS to continue.",
+    "openSettingsButton": "Open Settings"
+  },
+  "difficulty": {
+    "hardLabel": "Hard",
+    "mediumLabel": "Medium",
+    "easyLabel": "Easy",
+    "prompt": "Select difficulty above"
+  },
+  "game": {
+    "easy": {
+      "description": "Short-range hunt with close clues.",
+      "clues": [
+        "Start near the main entrance sign.",
+        "Look for a place where people sit in circles.",
+        "Find the final marker by the tallest tree nearby."
+      ]
+    },
+    "medium": {
+      "description": "Campus-wide walk with mixed clue complexity.",
+      "clues": [
+        "Begin where schedules are posted publicly.",
+        "Move toward the building with the glass atrium.",
+        "Check around the outdoor map for the final clue."
+      ]
+    },
+    "hard": {
+      "description": "Long route with indirect clues and wider search area.",
+      "clues": [
+        "Start from the oldest building plaque you can find.",
+        "Head to the path that crosses water or a bridge.",
+        "Finish at the landmark visible from the highest point."
+      ]
+    }
+  }
+}

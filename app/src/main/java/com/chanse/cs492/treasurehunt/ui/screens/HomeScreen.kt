@@ -38,12 +38,13 @@ import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import androidx.core.location.LocationManagerCompat
 import com.chanse.cs492.treasurehunt.R
+import com.chanse.cs492.treasurehunt.data.TreasureHuntContentLoader
 
 @Composable
 fun HomeScreen(onPlay: () -> Unit) {
     val ctx = LocalContext.current
     val locationManager = ctx.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-
+    val content = remember(ctx) { TreasureHuntContentLoader.load(ctx) }x
     fun hasLocationPermission(): Boolean {
         val fine = ContextCompat.checkSelfPermission(
             ctx,
@@ -86,19 +87,19 @@ fun HomeScreen(onPlay: () -> Unit) {
     if (showEnableLocationDialog) {
         AlertDialog(
             onDismissRequest = { showEnableLocationDialog = false },
-            title = { Text("Enable Location") },
-            text = { Text("Please enable Location/GPS to continue.") },
+            title = { Text(content.home.enableLocationTitle) },
+            text = { Text(content.home.enableLocationMessage) },
             confirmButton = {
                 TextButton(onClick = {
                     showEnableLocationDialog = false
                     ctx.startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
                 }) {
-                    Text("Open Settings")
+                    Text(content.home.openSettingsButton)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showEnableLocationDialog = false }) {
-                    Text("Cancel")
+                    Text(content.home.cancelButton)
                 }
             }
         )
@@ -108,8 +109,8 @@ fun HomeScreen(onPlay: () -> Unit) {
     if (showPermissionExplainer) {
         AlertDialog(
             onDismissRequest = { showPermissionExplainer = false },
-            title = { Text("Location Permission") },
-            text = { Text("Treasure Hunt uses GPS to place and track treasure locations near you.") },
+            title = { Text(content.home.locationPermissionTitle) },
+            text = { Text(content.home.locationPermissionMessage) },
             confirmButton = {
                 TextButton(onClick = {
                     showPermissionExplainer = false
@@ -120,12 +121,12 @@ fun HomeScreen(onPlay: () -> Unit) {
                         )
                     )
                 }) {
-                    Text("Continue")
+                    Text(content.home.continueButton)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showPermissionExplainer = false }) {
-                    Text("Cancel")
+                    Text(content.home.cancelButton)
                 }
             }
         )
@@ -143,7 +144,7 @@ fun HomeScreen(onPlay: () -> Unit) {
 
         // Curved titles for the top of the app
         CurvedTitle(
-            text = "Treasure Hunt",
+            text = content.home.title,
             modifier = Modifier
                 .align(Alignment.TopCenter)
                 .padding(top = 95.dp)
@@ -179,7 +180,7 @@ fun HomeScreen(onPlay: () -> Unit) {
                 .fillMaxWidth(0.79f)
                 .height(57.dp)
         ) {
-            Text("Play", fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
+            Text(content.home.playButton, fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
         }
     }
 }

@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.chanse.cs492.treasurehunt.ui.screens.ClueOneScreen
 import com.chanse.cs492.treasurehunt.ui.screens.DifficultyScreen
 import com.chanse.cs492.treasurehunt.ui.screens.HomeScreen
 
@@ -21,7 +22,14 @@ fun AppNavGraph() {
             )
         }
         composable(Routes.DIFFICULTY) {
-            DifficultyScreen()
+            DifficultyScreen(
+                onEasySelected = {
+                    navController.navigate(Routes.CLUE_ONE)
+                }
+            )
+        }
+        composable(Routes.CLUE_ONE) {
+            ClueOneScreen()
         }
     }
 }

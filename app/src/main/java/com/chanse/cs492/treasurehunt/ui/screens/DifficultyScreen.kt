@@ -11,20 +11,25 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.chanse.cs492.treasurehunt.R
+import com.chanse.cs492.treasurehunt.data.TreasureHuntContentLoader
 
 @Composable
-fun DifficultyScreen() {
+fun DifficultyScreen(onEasySelected: () -> Unit) {
+    val ctx = LocalContext.current
+    val content = remember(ctx) { TreasureHuntContentLoader.load(ctx) }
     Scaffold(contentWindowInsets = WindowInsets(0, 0, 0, 0)) { padding ->
         BoxWithConstraints(
             modifier = Modifier
@@ -48,7 +53,7 @@ fun DifficultyScreen() {
                     containerColor = Color(0xFFD3D3D3),
                     contentColor = Color.Black
                 )
-            ) { Text("Hard") }
+            ) { Text(content.difficulty.hardLabel) }
 
             Button(
                 onClick = { /* TODO medium */ },
@@ -60,18 +65,18 @@ fun DifficultyScreen() {
                     containerColor = Color(0xFFD3D3D3),
                     contentColor = Color.Black
                 )
-            ) { Text("Medium") }
+            ) { Text(content.difficulty.mediumLabel) }
 
             Button(
-                onClick = { /* TODO easy */ },
+                onClick = onEasySelected,
                 modifier = Modifier
                     .align(Alignment.TopCenter)
                     .padding(top = maxHeight * 0.66f)
                     .fillMaxWidth(0.76f)
-            ) { Text("Easy") }
+            ) { Text(content.difficulty.easyLabel) }
 
             Text(
-                text = "Select difficulty above",
+                text = content.difficulty.prompt,
                 fontSize = 34.sp,
                 fontWeight = FontWeight.ExtraBold,
                 color = Color(0xFFFFD700),
@@ -82,7 +87,7 @@ fun DifficultyScreen() {
             )
 
             Text(
-                text = "Select difficulty above",
+                text = content.difficulty.prompt,
                 fontSize = 34.sp,
                 fontWeight = FontWeight.ExtraBold,
                 color = Color.Black,
