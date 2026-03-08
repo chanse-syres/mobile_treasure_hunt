@@ -1,5 +1,11 @@
 package com.chanse.cs492.treasurehunt.ui.screens
 
+import android.Manifest
+import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.location.LocationManager
+import android.provider.Settings
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -17,19 +23,98 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
+import androidx.core.location.LocationManagerCompat
 import com.chanse.cs492.treasurehunt.viewmodel.TreasureViewModel
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.Priority
+import com.google.android.gms.tasks.CancellationTokenSource
 
 @Composable
 fun ClueScreen(
     vm: TreasureViewModel,
-    onFoundIt: () -> Unit,
+    onClueSolved: () -> Unit,
+    onHuntCompleted: () -> Unit,
     onQuit: () -> Unit
 ) {
     val uiState by vm.uiState.collectAsState()
     val clue = uiState.currentClue
+    val context = LocalContext.current
+
+    val fusedLocationClient = remember(context) {
+        LocationServices.getFusedLocationProviderClient(context)
+    }
+
+    val locationManager = remember(context) {
+        context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+    }
+
+    val showEnableLocationDialog = remember { mutableStateOf(false) }
+    val showLocationUnavailableDialog = remember { mutableStateOf(false) }
+    val checkingLocation = remember { mutableStateOf(false) }
+
+    fun hasLocationPermission(): Boolean {
+        val fine = ContextCompat.checkSelfPermission(
+            context,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
+
+        val coarse = ContextCompat.checkSelfPermission(
+            context,
+            Manifest.permission.ACCESS_COARSE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
+
+        return fine || coarse
+    }
+
+    fun isLocationEnabled(): Boolean = LocationManagerCompat.isLocationEnabled(locationManager)
+
+    fun validateCurrentLocation() {
+        if (!hasLocationPermission()) {
+            showLocationUnavailableDialog.value = true
+            return
+        }
+
+        if (!isLocationEnabled()) {
+            showEnableLocationDialog.value = true
+            return
+        }
+
+        checkingLocation.value = true
+
+        val cancellationTokenSource = CancellationTokenSource()
+
+        fusedLocationClient
+            .getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, cancellationTokenSource.token)
+            .addOnSuccessListener { location ->
+                checkingLocation.value = false
+
+                if (location == null) {
+                    showLocationUnavailableDialog.value = true
+                    return@addOnSuccessListener
+                }
+
+                val matched = vm.verifyLocation(location.latitude, location.longitude)
+
+                if (matched) {
+                    if (vm.isOnFinalClue()) {
+                        onHuntCompleted()
+                    } else {
+                        onClueSolved()
+                    }
+                }
+            }
+            .addOnFailureListener {
+                checkingLocation.value = false
+                showLocationUnavailableDialog.value = true
+            }
+    }
 
     if (clue == null) {
         Scaffold { padding ->
@@ -78,6 +163,57 @@ fun ClueScreen(
         )
     }
 
+    if (uiState.wrongLocationVisible) {
+        AlertDialog(
+            onDismissRequest = { vm.dismissWrongLocation() },
+            title = { Text("Not there yet") },
+            text = {
+                Text("You are not close enough to the correct location yet. Move closer and try again.")
+            },
+            confirmButton = {
+                TextButton(onClick = { vm.dismissWrongLocation() }) {
+                    Text("OK")
+                }
+            }
+        )
+    }
+
+    if (showEnableLocationDialog.value) {
+        AlertDialog(
+            onDismissRequest = { showEnableLocationDialog.value = false },
+            title = { Text("Enable Location") },
+            text = { Text("Please enable Location/GPS to verify the clue.") },
+            confirmButton = {
+                TextButton(onClick = {
+                    showEnableLocationDialog.value = false
+                    context.startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
+                }) {
+                    Text("Open Settings")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showEnableLocationDialog.value = false }) {
+                    Text("Cancel")
+                }
+            }
+        )
+    }
+
+    if (showLocationUnavailableDialog.value) {
+        AlertDialog(
+            onDismissRequest = { showLocationUnavailableDialog.value = false },
+            title = { Text("Location unavailable") },
+            text = {
+                Text("Your current location could not be retrieved. Make sure GPS is enabled and try again.")
+            },
+            confirmButton = {
+                TextButton(onClick = { showLocationUnavailableDialog.value = false }) {
+                    Text("OK")
+                }
+            }
+        )
+    }
+
     Scaffold { padding ->
         Column(
             modifier = Modifier
@@ -110,14 +246,15 @@ fun ClueScreen(
             }
 
             Button(
-                onClick = onFoundIt,
+                onClick = { validateCurrentLocation() },
+                enabled = !checkingLocation.value,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Found It!")
+                Text(if (checkingLocation.value) "Checking location..." else "Found It!")
             }
 
             OutlinedButton(
-                onClick = { /* scaffold only */ },
+                onClick = { /* scaffold only for now */ },
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text("Settings")

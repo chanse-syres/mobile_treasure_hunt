@@ -41,15 +41,13 @@ fun AppNavGraph() {
         composable(Routes.CLUE) {
             ClueScreen(
                 vm = treasureViewModel,
-                onFoundIt = {
-                    val isFinalClue = treasureViewModel.isOnFinalClue()
-                    if (isFinalClue) {
-                        treasureViewModel.completeHunt()
-                        navController.navigate(Routes.COMPLETED)
-                    } else {
-                        treasureViewModel.pauseTimer()
-                        navController.navigate(Routes.CLUE_SOLVED)
-                    }
+                onClueSolved = {
+                    treasureViewModel.pauseTimer()
+                    navController.navigate(Routes.CLUE_SOLVED)
+                },
+                onHuntCompleted = {
+                    treasureViewModel.completeHunt()
+                    navController.navigate(Routes.COMPLETED)
                 },
                 onQuit = {
                     treasureViewModel.resetHunt()
@@ -72,7 +70,7 @@ fun AppNavGraph() {
                     }
                 },
                 onSettings = {
-                    // scaffold only for now
+                    // scaffold placeholder for now
                 }
             )
         }
@@ -88,10 +86,10 @@ fun AppNavGraph() {
                     }
                 },
                 onStats = {
-                    // scaffold only for now.
+                    // scaffold placeholder for now
                 },
                 onLeaderboard = {
-                    // scaffold only for now.
+                    // scaffold placeholder for now
                 }
             )
         }

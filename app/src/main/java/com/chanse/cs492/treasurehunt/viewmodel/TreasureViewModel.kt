@@ -70,6 +70,7 @@ class TreasureViewModel(application: Application) : AndroidViewModel(application
 
     fun acknowledgeHowToPlay() {
         _uiState.update { it.copy(howToPlayVisible = false) }
+
         if (!_uiState.value.timerRunning && _uiState.value.elapsedSeconds == 0L) {
             startTimer()
         }
