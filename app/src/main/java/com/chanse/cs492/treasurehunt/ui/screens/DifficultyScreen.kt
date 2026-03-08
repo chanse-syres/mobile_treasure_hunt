@@ -11,6 +11,8 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -22,9 +24,20 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.chanse.cs492.treasurehunt.R
+import com.chanse.cs492.treasurehunt.data.model.Hunt
+import com.chanse.cs492.treasurehunt.viewmodel.TreasureViewModel
 
 @Composable
-fun DifficultyScreen() {
+fun DifficultyScreen(
+    vm: TreasureViewModel,
+    onSelectDifficulty: (String) -> Unit
+) {
+    val uiState by vm.uiState.collectAsState()
+
+    val hard = uiState.hunts.getOrNull(0)
+    val medium = uiState.hunts.getOrNull(1)
+    val easy = uiState.hunts.getOrNull(2)
+
     Scaffold(contentWindowInsets = WindowInsets(0, 0, 0, 0)) { padding ->
         BoxWithConstraints(
             modifier = Modifier
@@ -38,37 +51,32 @@ fun DifficultyScreen() {
                 contentScale = ContentScale.FillBounds
             )
 
-            Button(
-                onClick = { /* TODO hard */ },
+            DifficultyButton(
+                hunt = hard,
                 modifier = Modifier
                     .align(Alignment.TopCenter)
                     .padding(top = maxHeight * 0.23f)
                     .fillMaxWidth(0.76f),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFFD3D3D3),
-                    contentColor = Color.Black
-                )
-            ) { Text("Hard") }
+                onSelectDifficulty = onSelectDifficulty
+            )
 
-            Button(
-                onClick = { /* TODO medium */ },
+            DifficultyButton(
+                hunt = medium,
                 modifier = Modifier
                     .align(Alignment.TopCenter)
                     .padding(top = maxHeight * 0.46f)
                     .fillMaxWidth(0.76f),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFFD3D3D3),
-                    contentColor = Color.Black
-                )
-            ) { Text("Medium") }
+                onSelectDifficulty = onSelectDifficulty
+            )
 
-            Button(
-                onClick = { /* TODO easy */ },
+            DifficultyButton(
+                hunt = easy,
                 modifier = Modifier
                     .align(Alignment.TopCenter)
                     .padding(top = maxHeight * 0.66f)
-                    .fillMaxWidth(0.76f)
-            ) { Text("Easy") }
+                    .fillMaxWidth(0.76f),
+                onSelectDifficulty = onSelectDifficulty
+            )
 
             Text(
                 text = "Select difficulty above",
@@ -91,5 +99,30 @@ fun DifficultyScreen() {
                     .padding(bottom = 34.dp)
             )
         }
+    }
+}
+
+@Composable
+private fun DifficultyButton(
+    hunt: Hunt?,
+    modifier: Modifier,
+    onSelectDifficulty: (String) -> Unit
+) {
+    val enabled = hunt?.enabled == true
+
+    Button(
+        onClick = {
+            if (hunt != null && enabled) {
+                onSelectDifficulty(hunt.id)
+            }
+        },
+        modifier = modifier,
+        enabled = hunt != null,
+        colors = ButtonDefaults.buttonColors(
+            containerColor = if (enabled) Color(0xFF3B82F6) else Color(0xFFD3D3D3),
+            contentColor = Color.Black
+        )
+    ) {
+        Text(hunt?.title ?: "Loading...")
     }
 }

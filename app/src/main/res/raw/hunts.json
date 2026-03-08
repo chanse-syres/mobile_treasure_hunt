@@ -1,0 +1,52 @@
+{
+  "hunts": [
+    {
+      "id": "easy",
+      "order": 3,
+      "title": "Easy",
+      "intro": "Scaffold route with two clues.",
+      "enabled": true,
+      "finalMessage": "Great job! You completed Easy mode.",
+      "clues": [
+        {
+          "id": 1,
+          "title": "Clue 1",
+          "clueText": "Find the place where Saturdays come alive.",
+          "hintText": "Think stadium.",
+          "latitude": 44.5606217,
+          "longitude": -123.28264,
+          "radiusMeters": 75.0,
+          "solvedInfo": "This stadium is one of the best-known landmarks in the area."
+        },
+        {
+          "id": 2,
+          "title": "Clue 2",
+          "clueText": "Head somewhere students go to study quietly.",
+          "hintText": "Books, laptops, and long tables.",
+          "latitude": 44.5642,
+          "longitude": -123.2769,
+          "radiusMeters": 75.0,
+          "solvedInfo": "This stop is a common academic destination."
+        }
+      ]
+    },
+    {
+      "id": "medium",
+      "order": 2,
+      "title": "Medium",
+      "intro": "Coming soon.",
+      "enabled": false,
+      "finalMessage": "Medium mode complete. Hard mode unlocked!",
+      "clues": []
+    },
+    {
+      "id": "hard",
+      "order": 1,
+      "title": "Hard",
+      "intro": "Coming soon.",
+      "enabled": false,
+      "finalMessage": "Hard mode complete. Did you make the leaderboard?",
+      "clues": []
+    }
+  ]
+}
