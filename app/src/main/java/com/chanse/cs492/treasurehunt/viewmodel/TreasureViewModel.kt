@@ -70,8 +70,6 @@ class TreasureViewModel(application: Application) : AndroidViewModel(application
 
     fun acknowledgeHowToPlay() {
         _uiState.update { it.copy(howToPlayVisible = false) }
-
-        // Only start on the first acknowledgement for this run
         if (!_uiState.value.timerRunning && _uiState.value.elapsedSeconds == 0L) {
             startTimer()
         }
@@ -144,16 +142,18 @@ class TreasureViewModel(application: Application) : AndroidViewModel(application
         return matched
     }
 
-    fun advanceClueOrComplete() {
+    fun isOnFinalClue(): Boolean {
+        val state = _uiState.value
+        val hunt = state.selectedHunt ?: return false
+        return state.clueIndex == hunt.clues.lastIndex
+    }
+
+    fun goToNextClue() {
         val state = _uiState.value
         val hunt = state.selectedHunt ?: return
-
         val nextIndex = state.clueIndex + 1
 
-        if (nextIndex > hunt.clues.lastIndex) {
-            pauseTimer()
-            _uiState.update { it.copy(huntCompleted = true, hintVisible = false) }
-        } else {
+        if (nextIndex <= hunt.clues.lastIndex) {
             _uiState.update {
                 it.copy(
                     clueIndex = nextIndex,
@@ -162,6 +162,18 @@ class TreasureViewModel(application: Application) : AndroidViewModel(application
                     howToPlayVisible = false
                 )
             }
+        }
+    }
+
+    fun completeHunt() {
+        pauseTimer()
+        _uiState.update {
+            it.copy(
+                huntCompleted = true,
+                hintVisible = false,
+                wrongLocationVisible = false,
+                howToPlayVisible = false
+            )
         }
     }
 }

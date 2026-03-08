@@ -25,6 +25,7 @@ import com.chanse.cs492.treasurehunt.viewmodel.TreasureViewModel
 @Composable
 fun ClueScreen(
     vm: TreasureViewModel,
+    onFoundIt: () -> Unit,
     onQuit: () -> Unit
 ) {
     val uiState by vm.uiState.collectAsState()
@@ -51,10 +52,8 @@ fun ClueScreen(
 
     if (uiState.howToPlayVisible) {
         AlertDialog(
-            onDismissRequest = { /* force user to use Okay */ },
-            title = {
-                Text("How to play:")
-            },
+            onDismissRequest = { },
+            title = { Text("How to play:") },
             text = {
                 Text("Read the clue, use Hint if needed, then go to the location and press Found It when you think you have solved it.")
             },
@@ -69,12 +68,8 @@ fun ClueScreen(
     if (uiState.hintVisible) {
         AlertDialog(
             onDismissRequest = { vm.showHint(false) },
-            title = {
-                Text("Hint")
-            },
-            text = {
-                Text(clue.hintText)
-            },
+            title = { Text("Hint") },
+            text = { Text(clue.hintText) },
             confirmButton = {
                 TextButton(onClick = { vm.showHint(false) }) {
                     Text("Close")
@@ -115,10 +110,17 @@ fun ClueScreen(
             }
 
             Button(
-                onClick = { /* next step: location and Found It validation */ },
+                onClick = onFoundIt,
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text("Found It!")
+            }
+
+            OutlinedButton(
+                onClick = { /* scaffold only */ },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Settings")
             }
 
             OutlinedButton(

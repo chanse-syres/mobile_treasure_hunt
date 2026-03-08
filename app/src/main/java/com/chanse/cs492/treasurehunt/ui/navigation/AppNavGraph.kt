@@ -6,6 +6,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.chanse.cs492.treasurehunt.ui.screens.ClueScreen
+import com.chanse.cs492.treasurehunt.ui.screens.ClueSolvedScreen
+import com.chanse.cs492.treasurehunt.ui.screens.CompletedScreen
 import com.chanse.cs492.treasurehunt.ui.screens.DifficultyScreen
 import com.chanse.cs492.treasurehunt.ui.screens.HomeScreen
 import com.chanse.cs492.treasurehunt.viewmodel.TreasureViewModel
@@ -39,12 +41,57 @@ fun AppNavGraph() {
         composable(Routes.CLUE) {
             ClueScreen(
                 vm = treasureViewModel,
+                onFoundIt = {
+                    val isFinalClue = treasureViewModel.isOnFinalClue()
+                    if (isFinalClue) {
+                        treasureViewModel.completeHunt()
+                        navController.navigate(Routes.COMPLETED)
+                    } else {
+                        treasureViewModel.pauseTimer()
+                        navController.navigate(Routes.CLUE_SOLVED)
+                    }
+                },
                 onQuit = {
                     treasureViewModel.resetHunt()
                     navController.navigate(Routes.HOME) {
                         popUpTo(Routes.HOME) { inclusive = false }
                         launchSingleTop = true
                     }
+                }
+            )
+        }
+
+        composable(Routes.CLUE_SOLVED) {
+            ClueSolvedScreen(
+                vm = treasureViewModel,
+                onContinue = {
+                    treasureViewModel.goToNextClue()
+                    treasureViewModel.startTimer()
+                    navController.navigate(Routes.CLUE) {
+                        popUpTo(Routes.CLUE) { inclusive = true }
+                    }
+                },
+                onSettings = {
+                    // scaffold only for now
+                }
+            )
+        }
+
+        composable(Routes.COMPLETED) {
+            CompletedScreen(
+                vm = treasureViewModel,
+                onHome = {
+                    treasureViewModel.resetHunt()
+                    navController.navigate(Routes.DIFFICULTY) {
+                        popUpTo(Routes.DIFFICULTY) { inclusive = false }
+                        launchSingleTop = true
+                    }
+                },
+                onStats = {
+                    // scaffold only for now
+                },
+                onLeaderboard = {
+                    // scaffold only for now
                 }
             )
         }
