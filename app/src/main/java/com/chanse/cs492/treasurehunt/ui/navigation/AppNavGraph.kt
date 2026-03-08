@@ -88,10 +88,10 @@ fun AppNavGraph() {
                     }
                 },
                 onStats = {
-                    // scaffold only for now
+                    // scaffold only for now.
                 },
                 onLeaderboard = {
-                    // scaffold only for now
+                    // scaffold only for now.
                 }
             )
         }
