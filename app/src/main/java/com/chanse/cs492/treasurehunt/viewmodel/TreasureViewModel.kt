@@ -24,7 +24,8 @@ data class TreasureUiState(
     val hintVisible: Boolean = false,
     val wrongLocationVisible: Boolean = false,
     val huntCompleted: Boolean = false,
-    val lastDistanceMeters: Double? = null
+    val lastDistanceMeters: Double? = null,
+    val howToPlayVisible: Boolean = false
 ) {
     val currentClue: Clue?
         get() = selectedHunt?.clues?.getOrNull(clueIndex)
@@ -59,11 +60,21 @@ class TreasureViewModel(application: Application) : AndroidViewModel(application
                 hintVisible = false,
                 wrongLocationVisible = false,
                 huntCompleted = false,
-                lastDistanceMeters = null
+                lastDistanceMeters = null,
+                howToPlayVisible = true
             )
         }
 
         return hunt.enabled && hunt.clues.isNotEmpty()
+    }
+
+    fun acknowledgeHowToPlay() {
+        _uiState.update { it.copy(howToPlayVisible = false) }
+
+        // Only start on the first acknowledgement for this run
+        if (!_uiState.value.timerRunning && _uiState.value.elapsedSeconds == 0L) {
+            startTimer()
+        }
     }
 
     fun startTimer() {
@@ -97,7 +108,8 @@ class TreasureViewModel(application: Application) : AndroidViewModel(application
                 hintVisible = false,
                 wrongLocationVisible = false,
                 huntCompleted = false,
-                lastDistanceMeters = null
+                lastDistanceMeters = null,
+                howToPlayVisible = false
             )
         }
     }
@@ -146,7 +158,8 @@ class TreasureViewModel(application: Application) : AndroidViewModel(application
                 it.copy(
                     clueIndex = nextIndex,
                     hintVisible = false,
-                    wrongLocationVisible = false
+                    wrongLocationVisible = false,
+                    howToPlayVisible = false
                 )
             }
         }

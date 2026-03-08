@@ -5,6 +5,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.chanse.cs492.treasurehunt.ui.screens.ClueScreen
 import com.chanse.cs492.treasurehunt.ui.screens.DifficultyScreen
 import com.chanse.cs492.treasurehunt.ui.screens.HomeScreen
 import com.chanse.cs492.treasurehunt.viewmodel.TreasureViewModel
@@ -29,7 +30,20 @@ fun AppNavGraph() {
                 onSelectDifficulty = { huntId ->
                     val ready = treasureViewModel.selectHunt(huntId)
                     if (ready) {
-                        // next route later: navController.navigate(Routes.CLUE)
+                        navController.navigate(Routes.CLUE)
+                    }
+                }
+            )
+        }
+
+        composable(Routes.CLUE) {
+            ClueScreen(
+                vm = treasureViewModel,
+                onQuit = {
+                    treasureViewModel.resetHunt()
+                    navController.navigate(Routes.HOME) {
+                        popUpTo(Routes.HOME) { inclusive = false }
+                        launchSingleTop = true
                     }
                 }
             )
