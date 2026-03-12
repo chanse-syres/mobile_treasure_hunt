@@ -18,13 +18,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.chanse.cs492.treasurehunt.viewmodel.TreasureViewModel
 
+// Displays the transition screen after a clue has been solved.
 @Composable
 fun ClueSolvedScreen(
     vm: TreasureViewModel,
     onContinue: () -> Unit,
     onSettings: () -> Unit
 ) {
+    // Collects the latest UI state from the view model.
     val uiState by vm.uiState.collectAsState()
+    // Gets the current clue to display solved information.
     val clue = uiState.currentClue
 
     Scaffold { padding ->
@@ -51,6 +54,7 @@ fun ClueSolvedScreen(
                 style = MaterialTheme.typography.bodyLarge
             )
 
+            // Moves the player to the next clue.
             Button(
                 onClick = onContinue,
                 modifier = Modifier.fillMaxWidth()
@@ -58,6 +62,7 @@ fun ClueSolvedScreen(
                 Text("Continue")
             }
 
+            // Opens the settings action when implemented.
             OutlinedButton(
                 onClick = onSettings,
                 modifier = Modifier.fillMaxWidth()
@@ -68,6 +73,7 @@ fun ClueSolvedScreen(
     }
 }
 
+// Formats elapsed time as mm:ss.
 private fun formatElapsed(totalSeconds: Long): String {
     val minutes = totalSeconds / 60
     val seconds = totalSeconds % 60

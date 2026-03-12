@@ -18,6 +18,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.chanse.cs492.treasurehunt.viewmodel.TreasureViewModel
 
+// Displays the final screen after the hunt has been completed.
 @Composable
 fun CompletedScreen(
     vm: TreasureViewModel,
@@ -25,7 +26,9 @@ fun CompletedScreen(
     onStats: () -> Unit,
     onLeaderboard: () -> Unit
 ) {
+    // Collects the latest UI state from the view model.
     val uiState by vm.uiState.collectAsState()
+    // Gets the selected hunt for the final completion message.
     val hunt = uiState.selectedHunt
 
     Scaffold { padding ->
@@ -52,6 +55,7 @@ fun CompletedScreen(
                 style = MaterialTheme.typography.titleMedium
             )
 
+            // Returns the player to the home flow.
             Button(
                 onClick = onHome,
                 modifier = Modifier.fillMaxWidth()
@@ -59,6 +63,7 @@ fun CompletedScreen(
                 Text("Home")
             }
 
+            // Opens the stats action when implemented.
             OutlinedButton(
                 onClick = onStats,
                 modifier = Modifier.fillMaxWidth()
@@ -66,6 +71,7 @@ fun CompletedScreen(
                 Text("Stats")
             }
 
+            // Opens the leaderboard action when implemented.
             OutlinedButton(
                 onClick = onLeaderboard,
                 modifier = Modifier.fillMaxWidth()
@@ -76,6 +82,7 @@ fun CompletedScreen(
     }
 }
 
+// Formats elapsed time as mm:ss.
 private fun formatElapsed(totalSeconds: Long): String {
     val minutes = totalSeconds / 60
     val seconds = totalSeconds % 60

@@ -27,23 +27,30 @@ import com.chanse.cs492.treasurehunt.R
 import com.chanse.cs492.treasurehunt.data.model.Hunt
 import com.chanse.cs492.treasurehunt.viewmodel.TreasureViewModel
 
+// Displays the difficulty selection screen using the available hunts.
 @Composable
 fun DifficultyScreen(
     vm: TreasureViewModel,
     onSelectDifficulty: (String) -> Unit
 ) {
+    // Collects the latest UI state from the view model.
     val uiState by vm.uiState.collectAsState()
 
+    // Maps the first hunt to the hard option.
     val hard = uiState.hunts.getOrNull(0)
+    // Maps the second hunt to the medium option.
     val medium = uiState.hunts.getOrNull(1)
+    // Maps the third hunt to the easy option.
     val easy = uiState.hunts.getOrNull(2)
 
+    // Removes default inset padding so the background can fill the screen.
     Scaffold(contentWindowInsets = WindowInsets(0, 0, 0, 0)) { padding ->
         BoxWithConstraints(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
         ) {
+            // Draws the background image for the difficulty screen.
             Image(
                 painter = painterResource(id = R.drawable.difficulty_bg),
                 contentDescription = null,
@@ -51,6 +58,7 @@ fun DifficultyScreen(
                 contentScale = ContentScale.FillBounds
             )
 
+            // Places the hard difficulty button near the top path marker.
             DifficultyButton(
                 hunt = hard,
                 modifier = Modifier
@@ -60,6 +68,7 @@ fun DifficultyScreen(
                 onSelectDifficulty = onSelectDifficulty
             )
 
+            // Places the medium difficulty button in the middle.
             DifficultyButton(
                 hunt = medium,
                 modifier = Modifier
@@ -69,6 +78,7 @@ fun DifficultyScreen(
                 onSelectDifficulty = onSelectDifficulty
             )
 
+            // Places the easy difficulty button lower on the screen.
             DifficultyButton(
                 hunt = easy,
                 modifier = Modifier
@@ -78,6 +88,7 @@ fun DifficultyScreen(
                 onSelectDifficulty = onSelectDifficulty
             )
 
+            // Draws the gold outline text for emphasis.
             Text(
                 text = "Select difficulty above",
                 fontSize = 34.sp,
@@ -89,6 +100,7 @@ fun DifficultyScreen(
                     .padding(bottom = 38.dp)
             )
 
+            // Draws the main foreground text over the outline.
             Text(
                 text = "Select difficulty above",
                 fontSize = 34.sp,
@@ -102,12 +114,14 @@ fun DifficultyScreen(
     }
 }
 
+// Renders a single difficulty button for a hunt option.
 @Composable
 private fun DifficultyButton(
     hunt: Hunt?,
     modifier: Modifier,
     onSelectDifficulty: (String) -> Unit
 ) {
+    // Enables the styled active state only for enabled hunts.
     val enabled = hunt?.enabled == true
 
     Button(

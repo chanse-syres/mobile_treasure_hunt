@@ -12,12 +12,17 @@ import com.chanse.cs492.treasurehunt.ui.screens.DifficultyScreen
 import com.chanse.cs492.treasurehunt.ui.screens.HomeScreen
 import com.chanse.cs492.treasurehunt.viewmodel.TreasureViewModel
 
+// Defines the app navigation graph and connects each route to its screen.
 @Composable
 fun AppNavGraph() {
+    // Creates the navigation controller used to move between screens.
     val navController = rememberNavController()
+    // Shares one view model instance across the navigation flow.
     val treasureViewModel: TreasureViewModel = viewModel()
 
+    // Starts navigation at the home screen.
     NavHost(navController = navController, startDestination = Routes.HOME) {
+        // Displays the home screen and routes the player to difficulty selection.
         composable(Routes.HOME) {
             HomeScreen(
                 onPlay = {
@@ -26,6 +31,7 @@ fun AppNavGraph() {
             )
         }
 
+        // Displays hunt choices and starts the selected hunt when ready.
         composable(Routes.DIFFICULTY) {
             DifficultyScreen(
                 vm = treasureViewModel,
@@ -38,18 +44,17 @@ fun AppNavGraph() {
             )
         }
 
+        // Shows the active clue screen and handles solve, complete, and quit actions.
         composable(Routes.CLUE) {
             ClueScreen(
                 vm = treasureViewModel,
-                onFoundIt = {
-                    val isFinalClue = treasureViewModel.isOnFinalClue()
-                    if (isFinalClue) {
-                        treasureViewModel.completeHunt()
-                        navController.navigate(Routes.COMPLETED)
-                    } else {
-                        treasureViewModel.pauseTimer()
-                        navController.navigate(Routes.CLUE_SOLVED)
-                    }
+                onClueSolved = {
+                    treasureViewModel.pauseTimer()
+                    navController.navigate(Routes.CLUE_SOLVED)
+                },
+                onHuntCompleted = {
+                    treasureViewModel.completeHunt()
+                    navController.navigate(Routes.COMPLETED)
                 },
                 onQuit = {
                     treasureViewModel.resetHunt()
@@ -61,6 +66,7 @@ fun AppNavGraph() {
             )
         }
 
+        // Shows clue completion feedback before moving to the next clue.
         composable(Routes.CLUE_SOLVED) {
             ClueSolvedScreen(
                 vm = treasureViewModel,
@@ -72,11 +78,13 @@ fun AppNavGraph() {
                     }
                 },
                 onSettings = {
-                    // scaffold only for now
+                    // Placeholder for future settings navigation.
+                    // scaffold placeholder for now
                 }
             )
         }
 
+        // Shows the final completion screen and supports returning to the flow.
         composable(Routes.COMPLETED) {
             CompletedScreen(
                 vm = treasureViewModel,
@@ -88,10 +96,12 @@ fun AppNavGraph() {
                     }
                 },
                 onStats = {
-                    // scaffold only for now.
+                    // Placeholder for future statistics navigation.
+                    // scaffold placeholder for now
                 },
                 onLeaderboard = {
-                    // scaffold only for now.
+                    // Placeholder for future leaderboard navigation.
+                    // scaffold placeholder for now
                 }
             )
         }

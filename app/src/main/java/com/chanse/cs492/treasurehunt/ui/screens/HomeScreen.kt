@@ -39,11 +39,15 @@ import androidx.core.content.ContextCompat
 import androidx.core.location.LocationManagerCompat
 import com.chanse.cs492.treasurehunt.R
 
+// Displays the app home screen and gates play behind location access.
 @Composable
 fun HomeScreen(onPlay: () -> Unit) {
+    // Gets the current Android context.
     val ctx = LocalContext.current
+    // Gets the system location manager for GPS checks.
     val locationManager = ctx.getSystemService(Context.LOCATION_SERVICE) as LocationManager
 
+    // Returns true when location permission has been granted.
     fun hasLocationPermission(): Boolean {
         val fine = ContextCompat.checkSelfPermission(
             ctx,
@@ -58,12 +62,15 @@ fun HomeScreen(onPlay: () -> Unit) {
         return fine || coarse
     }
 
+    // Returns true when location services are enabled on the device.
     fun isLocationEnabled(): Boolean = LocationManagerCompat.isLocationEnabled(locationManager)
 
+    // Controls the GPS enable dialog state.
     var showEnableLocationDialog by remember { mutableStateOf(false) }
+    // Controls the permission explanation dialog state.
     var showPermissionExplainer by remember { mutableStateOf(false) }
 
-    // Permission launcher
+    // Requests location permission from the system.
     val permissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { result ->
@@ -71,10 +78,10 @@ fun HomeScreen(onPlay: () -> Unit) {
             (result[Manifest.permission.ACCESS_FINE_LOCATION] == true) ||
                     (result[Manifest.permission.ACCESS_COARSE_LOCATION] == true)
 
-        // If user denies, it stays on the home screen.
+        // Keeps the user on the home screen if permission is denied.
         if (!granted) return@rememberLauncherForActivityResult
 
-        // If user accepts, navigation to the difficulty screen happens.
+        // Continues only when GPS is also enabled.
         if (isLocationEnabled()) {
             onPlay()
         } else {
@@ -82,7 +89,7 @@ fun HomeScreen(onPlay: () -> Unit) {
         }
     }
 
-    // Dialog for enabling GPS/Location in device settings
+    // Prompts the user to enable GPS in system settings.
     if (showEnableLocationDialog) {
         AlertDialog(
             onDismissRequest = { showEnableLocationDialog = false },
@@ -104,7 +111,7 @@ fun HomeScreen(onPlay: () -> Unit) {
         )
     }
 
-    // Dialog that explains why the location is needed before the OS permission sheet is shown.
+    // Explains why location permission is needed before requesting it.
     if (showPermissionExplainer) {
         AlertDialog(
             onDismissRequest = { showPermissionExplainer = false },
@@ -131,9 +138,10 @@ fun HomeScreen(onPlay: () -> Unit) {
         )
     }
 
+    // Draws the home screen background, title, and play button.
     Box(modifier = Modifier.fillMaxSize()) {
 
-        // Background images
+        // Draws the home background image.
         Image(
             painter = painterResource(id = R.drawable.home_bg),
             contentDescription = null,
@@ -141,7 +149,7 @@ fun HomeScreen(onPlay: () -> Unit) {
             contentScale = ContentScale.Crop
         )
 
-        // Curved titles for the top of the app
+        // Draws the curved title at the top of the screen.
         CurvedTitle(
             text = "Treasure Hunt",
             modifier = Modifier
@@ -151,13 +159,12 @@ fun HomeScreen(onPlay: () -> Unit) {
                 .height(130.dp)
         )
 
-        // Play button that is gated by permissions and GPS enabled
+        // Starts the permission and GPS validation flow.
         Button(
             onClick = {
-                // Step E flow:
-                // 1. If no permission, request it
-                // 2. If permission but GPS off, prompts to enable
-                // 3. If both good are true, navigate
+                // Requests permission first when needed.
+                // Prompts for GPS only after permission is available.
+                // Navigates only when both permission and GPS are ready.
                 if (!hasLocationPermission()) {
                     showPermissionExplainer = true
                 } else {
@@ -185,17 +192,19 @@ fun HomeScreen(onPlay: () -> Unit) {
 }
 
 /**
- * Curved title using nativeCanvas.drawTextOnPath().
- * Includes black outline and a gold fill (same as button).
+ * Draws a curved title using text placed along an arc path.
  */
 @Composable
 private fun CurvedTitle(text: String, modifier: Modifier = Modifier) {
+    // Converts sp text size into pixels for canvas drawing.
     val density = LocalDensity.current
     val textSizePx = with(density) { 40.sp.toPx() }
 
     Canvas(modifier = modifier) {
+        // Creates the path used to curve the title text.
         val path = Path()
 
+        // Defines the arc bounds for the curved title.
         val rect = RectF(
             0f,
             size.height * 0.15f,
@@ -205,12 +214,15 @@ private fun CurvedTitle(text: String, modifier: Modifier = Modifier) {
 
         path.addArc(rect, 200f, 140f)
 
+        // Measures the path so the text can be centered on it.
         val measure = PathMeasure(path, false)
         val textWidth = Paint().apply { textSize = textSizePx }.measureText(text)
         val hOffset = (measure.length - textWidth) / 2f
 
+        // Stores the gold text color in Android color format.
         val gold = Color(0xFFD3A300).toArgb()
 
+        // Draws the black outline behind the title text.
         val strokePaint = Paint().apply {
             isAntiAlias = true
             color = android.graphics.Color.BLACK
@@ -221,6 +233,7 @@ private fun CurvedTitle(text: String, modifier: Modifier = Modifier) {
             strokeJoin = Paint.Join.ROUND
         }
 
+        // Draws the gold fill on top of the outline.
         val fillPaint = Paint().apply {
             isAntiAlias = true
             color = gold
@@ -229,6 +242,7 @@ private fun CurvedTitle(text: String, modifier: Modifier = Modifier) {
             style = Paint.Style.FILL
         }
 
+        // Renders the title outline and fill along the same arc.
         drawContext.canvas.nativeCanvas.drawTextOnPath(text, path, hOffset, 0f, strokePaint)
         drawContext.canvas.nativeCanvas.drawTextOnPath(text, path, hOffset, 0f, fillPaint)
     }
