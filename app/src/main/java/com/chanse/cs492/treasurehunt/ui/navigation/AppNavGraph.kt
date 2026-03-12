@@ -80,8 +80,8 @@ fun AppNavGraph() {
                 vm = treasureViewModel,
                 onHome = {
                     treasureViewModel.resetHunt()
-                    navController.navigate(Routes.DIFFICULTY) {
-                        popUpTo(Routes.DIFFICULTY) { inclusive = false }
+                    navController.navigate(Routes.HOME) {
+                        popUpTo(Routes.HOME) { inclusive = false }
                         launchSingleTop = true
                     }
                 },

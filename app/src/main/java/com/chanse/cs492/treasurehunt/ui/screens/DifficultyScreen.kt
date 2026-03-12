@@ -34,9 +34,9 @@ fun DifficultyScreen(
 ) {
     val uiState by vm.uiState.collectAsState()
 
-    val hard = uiState.hunts.getOrNull(0)
-    val medium = uiState.hunts.getOrNull(1)
-    val easy = uiState.hunts.getOrNull(2)
+    val hard = uiState.hunts.firstOrNull { it.id == "hard" }
+    val medium = uiState.hunts.firstOrNull { it.id == "medium" }
+    val easy = uiState.hunts.firstOrNull { it.id == "easy" }
 
     Scaffold(contentWindowInsets = WindowInsets(0, 0, 0, 0)) { padding ->
         BoxWithConstraints(
@@ -117,7 +117,7 @@ private fun DifficultyButton(
             }
         },
         modifier = modifier,
-        enabled = hunt != null,
+        enabled = hunt != null && enabled,
         colors = ButtonDefaults.buttonColors(
             containerColor = if (enabled) Color(0xFF3B82F6) else Color(0xFFD3D3D3),
             contentColor = Color.Black
