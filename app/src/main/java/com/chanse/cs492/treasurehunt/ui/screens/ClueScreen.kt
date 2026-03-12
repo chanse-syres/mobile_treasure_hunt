@@ -36,6 +36,7 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import com.google.android.gms.tasks.CancellationTokenSource
 
+private const val DEMO_FORCE_ADVANCE = true
 // Displays the current clue and verifies whether the player reached the correct location.
 @Composable
 fun ClueScreen(
@@ -88,6 +89,14 @@ fun ClueScreen(
 
     // Checks the user's current position against the active clue target.
     fun validateCurrentLocation() {
+        if (DEMO_FORCE_ADVANCE) {
+            if (vm.isOnFinalClue()) {
+                onHuntCompleted()
+            } else {
+                onClueSolved()
+            }
+            return
+        }
         if (!hasLocationPermission()) {
             showLocationUnavailableDialog.value = true
             return
