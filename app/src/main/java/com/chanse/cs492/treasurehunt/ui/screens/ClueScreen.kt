@@ -96,7 +96,26 @@ fun ClueScreen(
                 checkingLocation.value = false
 
                 if (location == null) {
-                    showLocationUnavailableDialog.value = true
+                    fusedLocationClient.lastLocation
+                        .addOnSuccessListener { lastLocation ->
+                            if (lastLocation == null) {
+                                showLocationUnavailableDialog.value = true
+                                return@addOnSuccessListener
+                            }
+
+                            val matched = vm.verifyLocation(lastLocation.latitude, lastLocation.longitude)
+
+                            if (matched) {
+                                if (vm.isOnFinalClue()) {
+                                    onHuntCompleted()
+                                } else {
+                                    onClueSolved()
+                                }
+                            }
+                        }
+                        .addOnFailureListener {
+                            showLocationUnavailableDialog.value = true
+                        }
                     return@addOnSuccessListener
                 }
 
@@ -168,7 +187,11 @@ fun ClueScreen(
             onDismissRequest = { vm.dismissWrongLocation() },
             title = { Text("Not there yet") },
             text = {
-                Text("You are not close enough to the correct location yet. Move closer and try again.")
+                Text(
+                    uiState.lastDistanceMeters
+                        ?.let { "You are about ${it.toInt()} meters away. Move closer and try again." }
+                        ?: "You are not close enough to the correct location yet. Move closer and try again."
+                )
             },
             confirmButton = {
                 TextButton(onClick = { vm.dismissWrongLocation() }) {
