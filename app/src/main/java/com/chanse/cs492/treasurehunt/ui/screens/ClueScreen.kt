@@ -144,7 +144,7 @@ fun ClueScreen(
                     .padding(16.dp),
                 verticalArrangement = Arrangement.Center
             ) {
-                Text("No clue loaded.")
+                Text("No clue loaded..")
                 Spacer(modifier = Modifier.height(12.dp))
                 Button(onClick = onQuit) {
                     Text("Back Home")
